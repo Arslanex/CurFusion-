@@ -101,7 +101,7 @@ class TranscriptManager:
                 continue
 
             # Use basename as the key to group sentences
-            file_key = os.path.basename(transcript_file)
+            file_key = os.path.splitext(os.path.basename(transcript_file))[0] + '.mp4'
             sentences_by_file[file_key] = []
 
             for segment_index, segment in enumerate(transcript_data['segments']):
@@ -146,6 +146,7 @@ class TranscriptManager:
         all_word_details = []
         for transcript_file in self.find_transcript_files():
             transcript_data = self._parse_transcript_file(transcript_file)
+            file_key = os.path.splitext(os.path.basename(transcript_file))[0] + '.mp4'
             if not transcript_data or 'segments' not in transcript_data:
                 continue
 
@@ -156,7 +157,7 @@ class TranscriptManager:
                         start=word.get('start', 0),
                         end=word.get('end', 0),
                         confidence=word.get('confidence', 1.0),
-                        source_file=os.path.basename(transcript_file),
+                        source_file=file_key,
                         segment_index=segment_index,
                         word_index_in_segment=word_idx,
                         segment_text=segment.get('text', '')

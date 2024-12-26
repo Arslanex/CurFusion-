@@ -4,22 +4,25 @@ import difflib
 
 from modules.youtube_downloader import YoutubeDownloader
 from modules.audio_transcription import AudioTranscription
+from modules.video_processing import VideoProcessor
 
 # Import TranscriptManager
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.utils.file_manager import TranscriptManager
 
-PROJECT_FOLDER = 'projects/'
+PROJECT_FOLDER = '../projects/'
+SEGMENTS_FOLDER = os.path.join(PROJECT_FOLDER, 'segments/')
 
-if not os.path.exists(PROJECT_FOLDER):
-    os.mkdir(PROJECT_FOLDER)
-    os.mkdir(PROJECT_FOLDER + 'videos/')
-    os.mkdir(PROJECT_FOLDER + 'audio/')
-    os.mkdir(PROJECT_FOLDER + 'transcription/')
-    print("Project folder created")
+# Ensure project and segments folders exist
+os.makedirs(PROJECT_FOLDER, exist_ok=True)
+os.makedirs(os.path.join(PROJECT_FOLDER, 'videos/'), exist_ok=True)
+os.makedirs(os.path.join(PROJECT_FOLDER, 'audio/'), exist_ok=True)
+os.makedirs(os.path.join(PROJECT_FOLDER, 'transcription/'), exist_ok=True)
+os.makedirs(SEGMENTS_FOLDER, exist_ok=True)
 
 youtube_downloader = YoutubeDownloader(download_path=PROJECT_FOLDER + 'videos/')
 audio_transcription = AudioTranscription(output_path=PROJECT_FOLDER + 'transcription/', audio_path=PROJECT_FOLDER + 'audio/')
+video_processor = VideoProcessor(upload_folder=PROJECT_FOLDER + 'videos/', output_folder=SEGMENTS_FOLDER)
 
 # YouTube Video Download
 youtube_links = input("Enter YouTube links (separated by space): ").split()
@@ -99,9 +102,7 @@ def main():
             for match in matches[:3]:  # Show top 3 matches
                 print(f"  - '{match['word']}' (Similarity: {match['similarity']:.2%})")
                 print(f"    File: {match['source_file']}")
-                print(f"    Timing: {match['start']:.2f}s - {match['end']:.2f}s")
-        else:
-            print("  No matches found")
+
 
 if __name__ == "__main__":
     main()
